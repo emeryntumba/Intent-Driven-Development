@@ -92,11 +92,18 @@ intent --version
     intent tasks
     ```
 
-5.  **Check Status**
-    Get a summary dashboard.
-    ```bash
-    intent status
-    ```
+## 📟 Command Reference
+
+| Command | Description & Utility |
+| :--- | :--- |
+| **`intent matrix`** | **The Dashboard.** Launches a high-performance TUI (Terminal User Interface) providing a real-time "Neural Interface" view of your project. It visualizes file structure, AI analysis, and system load in a sci-fi style. *Perfect for getting a high-level overview or impressing stakeholders.* |
+| **`intent add <intent>`** | **The Core.** Registers a new feature intent (e.g., "Add dark mode"). It triggers the AI to analyze your project context, calculate impact ("Blast Radius"), and generate a tailored implementation roadmap. |
+| **`intent tasks`** | **The Executor.** Opens an interactive checklist of the generated plan. Allows you to mark tasks as done, run automated scripts, and keep focus without switching to a project management tool. |
+| **`intent explain`** | **The Mentor.** Uses **GitHub Copilot CLI** to explain *why* the architectural choices were made. Great for understanding complex patterns or justifying decisions to a team. |
+| **`intent plan`** | **The Map.** Displays the current implementation roadmap as a clean list. Useful for a quick check of what needs to be done next without entering interactive mode. |
+| **`intent analyze`** | **The Scanner.** Performs a deep scan of your codebase to detect frameworks (Laravel, React, etc.), languages, and patterns. It feeds this context to the AI for better suggestions. |
+| **`intent status`** | **The Tracker.** Shows a summary box of the current active intent, including progress (e.g., "3/5 tasks completed") and status (PLANNED, IN_PROGRESS, COMPLETED). |
+| **`intent story`** | **The Historian.** Visualizes your project's history and evolution in a gamified, narrative format. Turns your git log and intent history into an engaging story of progress. |
 
 ## 🏗 Architecture
 
