@@ -14,6 +14,7 @@ import { Roadmap } from '../src/core/Roadmap.ts';
 import { GitPlanner } from '../src/core/GitPlanner.ts';
 import { Executor } from '../src/core/Executor.ts';
 import { Brain } from '../src/core/Brain.ts';
+import { Storyteller } from '../src/core/Storyteller.ts';
 
 const program = new Command();
 const memory = Memory.getInstance();
@@ -34,6 +35,15 @@ program
   .name('intent')
   .description('Intent Driven Development CLI - Focus on WHAT, not HOW')
   .version('1.0.0');
+
+
+program
+  .command('story')
+  .description('Visualize project history as an interactive story (Live Project Story Mode)')
+  .action(async () => {
+    const storyteller = new Storyteller();
+    await storyteller.tellStory();
+  });
 
 program
   .command('add')

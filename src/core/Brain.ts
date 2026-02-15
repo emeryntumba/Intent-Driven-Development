@@ -39,8 +39,27 @@ export class Brain {
    */
   private simulate(prompt: string, contextString: string = 'Generic'): string {
     const isLaravel = contextString.includes('LARAVEL');
-    const isReact = contextString.includes('REACT') || contextString.includes('NEXT');
+    const isReact = JSON.stringify(contextString).includes('REACT') || contextString.includes('NEXT') || contextString.includes('JS');
     const isPython = contextString.includes('PYTHON') || contextString.includes('DJANGO');
+
+    // Rule-Based Knowledge Base for "Essential Rules" Request
+    if (prompt.toLowerCase().includes('regles') || prompt.toLowerCase().includes('rules')) {
+        let rules = `### Essential Project Rules & Best Practices:\n\n`;
+        
+        if (isLaravel) {
+            rules += `**Laravel (PHP)**:\n- Use **FormRequests** for complex validation.\n- Keep Controllers thin: move logic to **Actions** or **Services**.\n- Use **Eloquent Resources** for structured API responses.\n- Enforce code style with **Laravel Pint**.\n\n`;
+        }
+        
+        if (isReact) {
+            rules += `**React / Next.js**:\n- Prefer **Functional Components** & Hooks.\n- Use **Server Components** by default in Next.js (App Router).\n- Enforce strict type checking with **TypeScript**.\n- Configure **ESLint** + **Prettier** for consistency.\n- Structure pattern: /components/ui (atomic), /features (domain logic).\n\n`;
+        }
+        
+        if (isPython) {
+            rules += `**Python**:\n- Follow **PEP8** style guide (auto-format with **Black** or **Ruff**).\n- Always use **Virtual Environments** (venv/poetry).\n- Enforce type hinting with **MyPy**.\n- Include docstrings (Google style).\n\n`;
+        }
+
+        return rules + `I have analyzed the project structure and suggest applying these patterns. Checking configured linters...`;
+    }
 
     if (prompt.includes('reset password') || prompt.includes('auth')) {
         if (isLaravel) {

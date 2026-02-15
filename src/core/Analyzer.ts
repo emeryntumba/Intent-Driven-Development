@@ -48,23 +48,37 @@ export class Analyzer {
     }
 
     if (files.includes('package.json')) {
-      const pkg = JSON.parse(fs.readFileSync(path.join(this.root, 'package.json'), 'utf-8'));
-      const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-      
-      if (deps['next']) frameworks.push('NEXT');
-      else if (deps['react']) frameworks.push('REACT');
-      else if (deps['vue']) frameworks.push('VUE');
-      else if (deps['@nestjs/core']) frameworks.push('NEST');
-      else if (deps['express']) frameworks.push('EXPRESS');
-
-      if (files.includes('tsconfig.json')) {
-          language = language === 'PHP' ? 'MULTI' : 'TS';
+      try {
+        const pkg = JSON.parse(fs.readFileSync(path.join(this.root, 'package.json'), 'utf-8'));
+        const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+        
+        if (deps['next']) frameworks.push('NEXT.JS');
+        if (deps['react']) {
+           if (!frameworks.includes('NEXT.JS')) frameworks.push('REACT');
+        }
+        if (deps['vue']) frameworks.push('VUE');
+        if (deps['@nestjs/core']) frameworks.push('NEST');
+        if (deps['express']) frameworks.push('EXPRESS');
+        
+        if (files.includes('tsconfig.json')) {
+            language = language === 'PHP' ? 'MULTI' : 'TS';
+        }
+      } catch (e) {
+          // Ignore bad package.json
       }
     }
 
+    // Python Framework Detection
+    if (files.includes('requirements.txt')) {
+        const reqs = fs.readFileSync(path.join(this.root, 'requirements.txt'), 'utf-8');
+        if (reqs.includes('Django')) frameworks.push('DJANGO');
+        if (reqs.includes('flask')) frameworks.push('FLASK');
+        if (reqs.includes('fastapi')) frameworks.push('FASTAPI');
+        language = 'PYTHON';
+    }
     if (files.includes('manage.py')) {
-        frameworks.push('DJANGO');
-        language = 'PYTHON'; // Or MULTI if others exist
+        if (!frameworks.includes('DJANGO')) frameworks.push('DJANGO');
+        language = 'PYTHON';
     }
 
     // Determine primary framework string

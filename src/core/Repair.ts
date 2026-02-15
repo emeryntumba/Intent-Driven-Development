@@ -26,11 +26,17 @@ export class Repair {
 
     // SCENARIO 2: Modules not installed (Node)
     if (context.includes('cannot find module') || context.includes('command not found')) {
-         // Generic dependency check could go here
-         console.log(chalk.gray('  -> Dependency issue detected.'));
+         if (fs.existsSync('package.json') && !fs.existsSync('node_modules')) {
+             return this.fixNodeDependencies();
+         }
     }
 
-    // SCENARIO 3: Git not initialized
+    // SCENARIO 3: Python Module Missing
+    if (context.includes('modulenotfounderror') || context.includes('no module named')) {
+        return this.fixPythonDependencies(context);
+    }
+
+    // SCENARIO 4: Git not initialized
     if (context.includes('not a git repository')) {
         return this.fixGitInit();
     }
@@ -50,8 +56,63 @@ export class Repair {
     const artisanShim = `#!/usr/bin/env php
 <?php
 // Intent CLI: Auto-generated shim for demo purposes
-echo "   [Mock-Artisan] executing command..." . PHP_EOL;
-// Mimic success
+// This shim simulates Laravel commands when full framework is missing
+
+$command = $argv[1] ?? 'list';
+$name = $argv[2] ?? 'unknown';
+
+if ($command === 'make:migration') {
+    $dir = 'database/migrations';
+    if (!is_dir($dir)) mkdir($dir, 0777, true);
+    
+    $timestamp = date('Y_m_d_His');
+    $filename = "{$dir}/{$timestamp}_{$name}.php";
+    
+    // Parse table name from migration name (e.g. create_users_table -> users)
+    preg_match('/create_(.*)_table/', $name, $matches);
+    $tableName = $matches[1] ?? 'table_name';
+
+    $content = "<?php
+
+use Illuminate\\\\Database\\\\Migrations\\\\Migration;
+use Illuminate\\\\Database\\\\Schema\\\\Blueprint;
+use Illuminate\\\\Support\\\\Facades\\\\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('{$tableName}', function (Blueprint \\$table) {
+            \\$table->id();
+            \\$table->string('name');
+            \\$table->text('description')->nullable();
+            \\$table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('{$tableName}');
+    }
+};";
+    
+    file_put_contents($filename, $content);
+    
+    echo "Created Migration: {$filename}" . PHP_EOL;
+}
+elseif (strpos($command, 'make:') === 0) {
+    echo "Simulated creation resource: {$name}" . PHP_EOL;
+}
+else {
+    echo "   [Mock-Artisan] executing {$command}..." . PHP_EOL;
+}
+
 exit(0);
 ?>`;
 
@@ -79,4 +140,52 @@ exit(0);
           return false;
       }
   }
+
+  private async fixNodeDependencies(): Promise<boolean> {
+      const spinner = ora('Fixing: Installing Node dependencies...').start();
+      try {
+          // Detect manager
+          const lockFile = fs.existsSync('yarn.lock') ? 'yarn' : 
+                           fs.existsSync('pnpm-lock.yaml') ? 'pnpm' : 'npm';
+          
+          await execa(lockFile, ['install']);
+          spinner.succeed(chalk.green(`  ✔ Dependencies installed via ${lockFile}.`));
+          return true;
+      } catch (e) {
+          spinner.fail('Failed to install dependencies.');
+          return false;
+      }
+  }
+
+  private async fixPythonDependencies(errorContext: string): Promise<boolean> {
+      const spinner = ora('Fixing: Installing Python dependencies...').start();
+      
+      // Extract module name from error
+      // "No module named 'requests'"
+      const match = errorContext.match(/no module named ['"]([^'"]+)['"]/i);
+      if (match && match[1]) {
+          const module = match[1];
+          try {
+              await execa('pip', ['install', module]);
+              spinner.succeed(chalk.green(`  ✔ Installed missing module: ${module}`));
+              return true;
+          } catch(e) {
+              spinner.fail(`Failed to install ${module}`);
+          }
+      }
+      
+      // Fallback: requirements.txt
+      if (fs.existsSync('requirements.txt')) {
+          try {
+              await execa('pip', ['install', '-r', 'requirements.txt']);
+              spinner.succeed(chalk.green('  ✔ Installed from requirements.txt'));
+              return true;
+          } catch (e) {
+              spinner.fail('Failed to install requirements.');
+          }
+      }
+
+      return false;
+  }
 }
+

@@ -73,6 +73,237 @@
           "command": "php artisan make:migration create_feature_table"
         }
       ]
+    },
+    {
+      "id": "ksm8qb",
+      "original": "ameliore l'ensemble du projet",
+      "status": "COMPLETED",
+      "type": "UNKNOWN",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T10:58:08.527Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "DONE",
+          "type": "MANUAL"
+        },
+        {
+          "id": "T2",
+          "description": "Scaffold Implementation Files",
+          "status": "DONE",
+          "type": "MANUAL",
+          "file": "src/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Migration",
+          "status": "DONE",
+          "type": "SHELL",
+          "command": "php artisan make:migration create_feature_table"
+        }
+      ]
+    },
+    {
+      "id": "9ulhig",
+      "original": "ameliore l'ensemble du projet",
+      "status": "COMPLETED",
+      "type": "UNKNOWN",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T11:02:02.579Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "DONE",
+          "type": "MANUAL"
+        },
+        {
+          "id": "T2",
+          "description": "Scaffold Implementation Files",
+          "status": "DONE",
+          "type": "MANUAL",
+          "file": "src/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Migration",
+          "status": "DONE",
+          "type": "SHELL",
+          "command": "php artisan make:migration create_feature_table"
+        }
+      ]
+    },
+    {
+      "id": "3pv5vi",
+      "original": "refaire le systeme de migration",
+      "status": "PLANNED",
+      "type": "UNKNOWN",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T11:03:25.414Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "TODO",
+          "type": "MANUAL"
+        },
+        {
+          "id": "T2",
+          "description": "Scaffold Implementation Files",
+          "status": "TODO",
+          "type": "MANUAL",
+          "file": "src/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Migration",
+          "status": "TODO",
+          "type": "SHELL",
+          "command": "php artisan make:migration create_feature_table"
+        }
+      ]
+    },
+    {
+      "id": "2undfe",
+      "original": "ameliore l'ensemble du projet",
+      "status": "COMPLETED",
+      "type": "UNKNOWN",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T11:04:50.188Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "DONE",
+          "type": "MANUAL"
+        },
+        {
+          "id": "T2",
+          "description": "Scaffold Implementation Files",
+          "status": "DONE",
+          "type": "MANUAL",
+          "file": "src/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Migration",
+          "status": "DONE",
+          "type": "SHELL",
+          "command": "php artisan make:migration create_feature_table"
+        }
+      ]
+    },
+    {
+      "id": "6ax7mm",
+      "original": "demo self healing migration",
+      "status": "PLANNED",
+      "type": "UNKNOWN",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T11:06:59.175Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "TODO",
+          "type": "MANUAL"
+        },
+        {
+          "id": "T2",
+          "description": "Scaffold Implementation Files",
+          "status": "TODO",
+          "type": "MANUAL",
+          "file": "src/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Migration",
+          "status": "TODO",
+          "type": "SHELL",
+          "command": "php artisan make:migration create_feature_table"
+        }
+      ]
+    },
+    {
+      "id": "757mdvu",
+      "original": "ameliore l'ensemble du projet",
+      "status": "PLANNED",
+      "type": "UNKNOWN",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T11:08:13.065Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "TODO",
+          "type": "MANUAL"
+        },
+        {
+          "id": "T2",
+          "description": "Scaffold Implementation Files",
+          "status": "TODO",
+          "type": "MANUAL",
+          "file": "src/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Migration",
+          "status": "DONE",
+          "type": "SHELL",
+          "command": "php artisan make:migration create_feature_table"
+        }
+      ]
+    },
+    {
+      "id": "jlgcek",
+      "original": "Add product migration",
+      "status": "PLANNED",
+      "type": "FEATURE",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T11:12:32.980Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "TODO",
+          "type": "MANUAL"
+        },
+        {
+          "id": "T2",
+          "description": "Scaffold Implementation Files",
+          "status": "TODO",
+          "type": "MANUAL",
+          "file": "src/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Migration",
+          "status": "TODO",
+          "type": "SHELL",
+          "command": "php artisan make:migration create_feature_table"
+        }
+      ]
     }
   ],
   "scannedFiles": [],
