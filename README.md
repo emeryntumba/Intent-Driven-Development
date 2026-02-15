@@ -25,17 +25,24 @@ Developers spend too much time on "How do I implement this?" (wiring files, crea
 
 ### 2. Setup (Quick Way)
 
-**Windows:**
-Double-click `setup.bat` or run:
-```bash
-./setup.bat
-```
+1.  **Clone and Enter**:
+    ```bash
+    git clone https://github.com/your-username/intent-driven-development.git
+    cd intent-driven-development
+    ```
 
-**Linux / Mac:**
-Make the script executable and run it:
-```bash
-chmod +x setup.sh && ./setup.sh
-```
+2.  **Run Installer**:
+
+    **Windows:**
+    Double-click `setup.bat` or run:
+    ```bash
+    ./setup.bat
+    ```
+
+    **Linux / Mac:**
+    ```bash
+    chmod +x setup.sh && ./setup.sh
+    ```
 
 ### 3. Manual Installation (If script fails)
 Clone the repository and install dependencies:
