@@ -23,7 +23,21 @@ Developers spend too much time on "How do I implement this?" (wiring files, crea
 - **Git**
 - **GitHub CLI** (optional, recommended for AI features)
 
-### 2. Setup
+### 2. Setup (Quick Way)
+
+**Windows:**
+Double-click `setup.bat` or run:
+```bash
+./setup.bat
+```
+
+**Linux / Mac:**
+Make the script executable and run it:
+```bash
+chmod +x setup.sh && ./setup.sh
+```
+
+### 3. Manual Installation (If script fails)
 Clone the repository and install dependencies:
 
 ```bash
@@ -32,7 +46,7 @@ cd intent-driven-development
 npm install
 ```
 
-### 3. Build & Link
+### 4. Build & Link
 Compile the TypeScript code and link the command globally:
 
 ```bash
