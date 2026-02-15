@@ -68,17 +68,17 @@ export class Matrix {
     const coreColor = info.language === 'PHP' ? chalk.red : info.language === 'PYTHON' ? chalk.yellow : chalk.blue;
     
     // AI Loop Variables
-    let currentInference = '';
-    let targetInference = '';
-    let currentFile = '';
-    let currentSnippet = '';
+    let projectSummary = '';
+    let targetSummary = '';
     let lastInferenceTime = Date.now() - 5000; // Trigger immediately
     let isAnalyzing = false;
     let inferenceIndex = 0;
 
     const startTime = Date.now();
     process.stdout.write('\x1B[?25l'); // Hide cursor
-    console.clear(); // Clear once at start
+    process.stdout.write('\x1B[2J');   // Clear screen once
+    
+    const termWidth = process.stdout.columns || 60;
 
     // Enable keypress handling
     if (process.stdin.isTTY) {
@@ -99,60 +99,58 @@ export class Matrix {
         // Random usage generators
         const cpu = Math.floor(Math.abs(Math.sin(Date.now() / 1000) * 100));
         const mem = Math.floor(256 + Math.abs(Math.cos(Date.now() / 2000) * 50));
-        const net = (Math.random() * 2).toFixed(1);
 
-        // Copilot "Ghost in the Machine" Logic
-        if (!isAnalyzing && (Date.now() - lastInferenceTime > 4000) && files.length > 0) {
+        // Project Summary Logic (Triggered once)
+        if (!isAnalyzing && !targetSummary && (Date.now() - lastInferenceTime > 2000)) {
             isAnalyzing = true;
-            lastInferenceTime = Date.now();
             
-            this.prepareGhostAnalysis(files).then(result => {
-                currentFile = result.file;
-                currentSnippet = result.snippet;
-                targetInference = result.thought;
-                inferenceIndex = 0;
-                currentInference = ''; // Reset for typing effect
+            const prompt = `Based on the framework ${info.framework} and files like ${files.slice(0, 15).join(', ')}, explain in 150 characters maximum: 1. What is this project? 2. What are its 3 main features?`;
+            
+            this.brain.ask(prompt).then(res => {
+                targetSummary = res.replace(/^"|"$/g, '').trim();
                 isAnalyzing = false;
             }).catch(() => {
+                targetSummary = `Architecting a ${info.framework} solution. Core features: semantic intelligence, real-time analysis, and high-performance workflow automation.`;
                 isAnalyzing = false;
             });
         }
 
-        // Typewriter Effect for AI Thought
-        if (targetInference && currentInference.length < targetInference.length) {
-            currentInference += targetInference.charAt(inferenceIndex);
+        // Typewriter Effect for AI Summary
+        if (targetSummary && projectSummary.length < targetSummary.length) {
+            projectSummary += targetSummary.charAt(inferenceIndex);
             inferenceIndex++;
-        } else if (!targetInference && !isAnalyzing) {
-             // Fallback if no AI active
-             targetInference = "Scanning project execution flow...";
-             inferenceIndex = 0;
         }
 
+        // Prepare frame with forced padding to prevent flickering and ghosting
         const dashboard = [
           chalk.bold.white('╔══════════════════════════════════════════════════════════╗'),
-          chalk.bold.white(`║ ${chalk.cyan('INTENT MATRIX')} v3.4   ${chalk.gray('Status:')} ${chalk.green('ONLINE')} ${pulse} ║`),
+          chalk.bold.white(`║ ${chalk.cyan('INTENT MATRIX')} v5.1   ${chalk.gray('Status:')} ${chalk.green('ONLINE')} ${pulse} ║`),
           chalk.bold.white('╚══════════════════════════════════════════════════════════╝'),
-          `Project Root:   ${process.cwd().padEnd(40)}`,
-          `Framework:      ${coreColor.bold(info.framework)}         `,
-          `Active File:    ${(currentFile ? chalk.yellow(currentFile) : chalk.gray('Scanning...')).padEnd(50)}`,
-          '',
+          `Project Root:   ${process.cwd().substring(0, termWidth - 20).padEnd(termWidth - 20)}`,
+          `Framework:      ${coreColor.bold(info.framework).padEnd(termWidth - 10)}`,
+          `Total Modules:  ${chalk.yellow(files.length.toString()).padEnd(20)}`,
+          ''.padEnd(termWidth),
           chalk.bgBlack.white.underline('REALTIME VITALS'.padEnd(58)),
-          `CPU: ${this.drawBar(cpu, 15)} ${cpu}%  MEM: ${this.drawBar((mem/512)*100, 15)} ${mem}MB     `,
-          '',
-          chalk.bgBlack.white.underline('NEURAL INTERFACE'.padEnd(58)),
-          (currentSnippet ? chalk.dim(currentSnippet.split('\n').slice(0, 2).map(l => `> ${l.padEnd(50)}`).join('\n')) : chalk.dim('> Waiting for stream...'.padEnd(56))),
-          '',
-          chalk.bgBlack.white.underline('COPILOT INSIGHT'.padEnd(58)),
-          `${chalk.magenta('>>>')} ${(currentInference + '_').padEnd(54)}`, 
-          '',
-          chalk.gray('  Press [x] or [q] to disconnect from the Matrix.'.padEnd(58))
-        ].join('\n');
+          `CPU: ${this.drawBar(cpu, 15)} ${cpu}%  MEM: ${this.drawBar((mem/512)*100, 15)} ${mem}MB`,
+          ''.padEnd(termWidth),
+          chalk.bgBlack.white.underline('COPILOT PROJECT ARCHITECTURE'.padEnd(58)),
+          ''.padEnd(termWidth),
+          chalk.magenta('  STRATEGY :'),
+          `  ${(projectSummary.substring(0, 50)).padEnd(55)}`,
+          `  ${(projectSummary.substring(50, 100)).padEnd(55)}`,
+          `  ${(projectSummary.substring(100, 150)).padEnd(55)}`,
+          ''.padEnd(termWidth),
+          chalk.bgBlack.white.underline('KEY CAPABILITIES'.padEnd(58)),
+          `  ${chalk.green('✔')} Neural intent mapping`.padEnd(termWidth),
+          `  ${chalk.green('✔')} Multi-framework orchestration`.padEnd(termWidth),
+          ''.padEnd(termWidth),
+          chalk.gray('  Press [x] to disconnect from the Matrix.'.padEnd(termWidth))
+        ].map(line => line + '\x1B[K').join('\n'); // \x1B[K erases to end of line
 
-        // Move cursor to top-left (H) instead of clearing (2J) to stop flickering
-        process.stdout.write('\x1B[H'); 
-        process.stdout.write(dashboard);
+        // Move cursor to top-left (0,0) and write entire buffer
+        process.stdout.write('\x1B[H' + dashboard);
         
-        await this.delay(80); 
+        await this.delay(100); 
     }
     
     // Cleanup
