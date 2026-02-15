@@ -17,6 +17,8 @@
   "dependencies": {
     "@types/figlet": "^1.7.0",
     "@types/node": "^25.2.3",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
@@ -31,6 +33,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@types/blessed": "^0.1.27",
     "@types/glob": "^8.1.0",
     "@types/inquirer": "^9.0.9"
   }

@@ -15,6 +15,7 @@ import { GitPlanner } from '../src/core/GitPlanner.ts';
 import { Executor } from '../src/core/Executor.ts';
 import { Brain } from '../src/core/Brain.ts';
 import { Storyteller } from '../src/core/Storyteller.ts';
+import { Matrix } from '../src/core/Matrix.ts';
 
 const program = new Command();
 const memory = Memory.getInstance();
@@ -43,6 +44,14 @@ program
   .action(async () => {
     const storyteller = new Storyteller();
     await storyteller.tellStory();
+  });
+
+program
+  .command('matrix')
+  .description('Enter the Project Matrix (WOW Mode)')
+  .action(async () => {
+    const matrix = new Matrix();
+    await matrix.enter();
   });
 
 program

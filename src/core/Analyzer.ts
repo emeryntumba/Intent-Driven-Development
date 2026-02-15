@@ -40,10 +40,14 @@ export class Analyzer {
 
     // Framework & Language Detection
     if (files.includes('composer.json')) {
-      const composer = JSON.parse(fs.readFileSync(path.join(this.root, 'composer.json'), 'utf-8'));
-      if (composer.require?.['laravel/framework']) {
-        frameworks.push('LARAVEL');
-        language = 'PHP';
+      try {
+        const composer = JSON.parse(fs.readFileSync(path.join(this.root, 'composer.json'), 'utf-8'));
+        if (composer?.require?.['laravel/framework']) {
+          frameworks.push('LARAVEL');
+          language = 'PHP';
+        }
+      } catch (e) {
+          // Ignore bad composer.json
       }
     }
 
