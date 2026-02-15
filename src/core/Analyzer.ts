@@ -74,12 +74,12 @@ export class Analyzer {
     const structure = {
       hasControllers: this.exists('app/Http/Controllers') || this.exists('src/controllers') || this.exists('controllers'),
       hasComponents: this.exists('src/components') || this.exists('components'),
-      hasModels: this.exframeworks, ists('app/Models') || this.exists('src/models') || this.exists('models'),
+      hasModels: this.exists('app/Models') || this.exists('src/models') || this.exists('models'),
       hasRoutes: this.exists('routes') || this.exists('src/routes'),
       routesPath: this.findPath(['routes/api.php', 'routes/web.php', 'src/routes.ts', 'src/app.ts'])
     };
 
-    return { framework, language, packageManager, root: this.root, structure };
+    return { framework, frameworks, language, packageManager, root: this.root, structure };
   }
 
   private exists(p: string): boolean {

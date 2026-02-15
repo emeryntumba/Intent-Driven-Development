@@ -109,12 +109,23 @@ program
     const files = await analyzer.scanFiles();
     
     spinner.succeed(chalk.green('Analysis Complete'));
+    
+    // Generate AI Context Summary
+    const structureSummary = Object.entries(info.structure)
+        .filter(([_, exists]) => exists)
+        .map(([key]) => key.replace('has', ''))
+        .join(', ');
+
     console.log(boxen(
         `${chalk.bold('Project Analysis')}\n\n` +
         `Framework: ${chalk.green(info.framework)}\n` +
         `Language:  ${chalk.blue(info.language)}\n` +
         `Files:     ${chalk.yellow(files.length)}\n` +
-        `Root:      ${chalk.gray(info.root)}`,
+        `Root:      ${chalk.gray(info.root)}\n\n` +
+        `${chalk.bold('AI Context (Copilot Ready)')}\n` +
+        `Structure: ${chalk.cyan(structureSummary || 'Minimal')}\n` +
+        `Pkg Mgr:   ${chalk.magenta(info.packageManager)}\n` +
+        `Context:   ${chalk.italic('Provides grounding for relevant suggestions')}`,
         { padding: 1, borderStyle: 'single', borderColor: 'blue' }
     ));
   });

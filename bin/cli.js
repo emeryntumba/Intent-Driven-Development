@@ -24,9 +24,14 @@ try {
 const args = [
     '--loader', loaderArg,
     '--no-warnings',
+    '--experimental-specifier-resolution=node', // Force specifier resolution
     entryPoint,
     ...process.argv.slice(2)
 ];
+
+// Debug mode (can be enabled by uncommenting)
+// console.log('[CLI DEBUG] Executing:', process.execPath, args.join(' '));
+// console.log('[CLI DEBUG] TS_NODE_PROJECT:', tsConfigPath);
 
 const child = spawn(process.execPath, args, {
     stdio: 'inherit',
