@@ -40,6 +40,64 @@
           "file": "app/Http/Controllers/AuthController.php"
         }
       ]
+    },
+    {
+      "id": "xiub1",
+      "original": "users can reset password via email",
+      "status": "PLANNED",
+      "type": "FEATURE",
+      "impact": {
+        "files": [
+          "app/Models/User.php",
+          "routes/api.php",
+          "database/migrations"
+        ],
+        "modules": [
+          "Models",
+          "api.php",
+          "migrations"
+        ]
+      },
+      "createdAt": "2026-02-15T08:59:13.636Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Create/Update User Migration",
+          "status": "TODO",
+          "file": "database/migrations/create_users_table.php",
+          "command": "php artisan make:migration create_users_table"
+        },
+        {
+          "id": "T2",
+          "description": "Update User Model fillables",
+          "status": "TODO",
+          "file": "app/Models/User.php"
+        },
+        {
+          "id": "T3",
+          "description": "Create Auth Controller logic",
+          "status": "TODO",
+          "file": "app/Http/Controllers/AuthController.php"
+        },
+        {
+          "id": "AI-1",
+          "description": "Draft Database Schema",
+          "status": "TODO",
+          "command": "php artisan make:migration create_email_table"
+        },
+        {
+          "id": "AI-2",
+          "description": "Generate API Controller",
+          "status": "TODO",
+          "file": "app/Http/Controllers/FeatureController.php"
+        },
+        {
+          "id": "AI-3",
+          "description": "Update API Routes",
+          "status": "TODO",
+          "file": "routes/api.php"
+        }
+      ]
     }
   ],
   "scannedFiles": [],

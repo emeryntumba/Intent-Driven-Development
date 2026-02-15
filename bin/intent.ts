@@ -11,12 +11,14 @@ import { Parser } from '../src/core/Parser.ts';
 import { Analyzer } from '../src/core/Analyzer.ts';
 import { Impact } from '../src/core/Impact.ts';
 import { Roadmap } from '../src/core/Roadmap.ts';
+import { Brain } from '../src/core/Brain.ts';
 
 const program = new Command();
 const memory = Memory.getInstance();
 // Initialize core modules
 const analyzer = new Analyzer(process.cwd());
 const parser = new Parser(memory);
+const brain = new Brain();
 
 
 console.log(
@@ -49,16 +51,26 @@ program
       text: chalk.blue(`Analyzed ${projectInfo.framework} project (${projectFiles.length} files scanned)`)
     });
 
-    const impactSpinner = ora('Calculating impact...').start();
+    const impactSpinner = ora('Calculating impact (AI Analysis)...').start();
     const impact = Impact.calculate(intent, projectFiles);
+    // Simulate AI thinking
+    await brain.generateExplanation(intent); 
+    
     intent.impact = impact;
+
     impactSpinner.succeed(chalk.yellow(`Impact analysis complete: ${impact.files.length} files affected`));
 
-    const planSpinner = ora('Generating roadmap...').start();
-    const tasks = Roadmap.generate(intent);
-    intent.tasks = tasks;
+    const planSpinner = ora('Generating roadmap with GitHub Copilot...').start();
+    
+    // Combining Heuristics with AI logic
+    const baseTasks = Roadmap.generate(intent);
+    const aiTasks = await brain.generateSmartTasks(intent);
+    
+    // Merge tasks
+    intent.tasks = [...baseTasks, ...aiTasks].filter((v,i,a)=>a.findIndex(t=>(t.description === v.description))===i);
+
     intent.status = 'PLANNED';
-    planSpinner.succeed(chalk.magenta(`Roadmap generated: ${tasks.length} tasks created`));
+    planSpinner.succeed(chalk.magenta(`Roadmap generated: ${intent.tasks.length} tasks ready`));
 
     memory.addIntent(intent);
 
@@ -156,13 +168,38 @@ program
     console.log(chalk.green('\nTask status updated.'));
   });
 
+// Brain is already imported at the top
+// import { Brain } from '../src/core/Brain.ts';
+
+// Add the brain instance at the top
+// const brain = new Brain();
+
 program
   .command('explain')
-  .description('Explain the architectural decisions')
-  .action(() => {
-    console.log(chalk.cyan('💡 Architecture explanation:'));
-    console.log(chalk.gray('This feature requires database migration changes due to "user" entity modification...'));
-    // Mock explanation
+  .description('Explain the architectural decisions with AI')
+  .action(async () => {
+    const intents = memory.getIntents();
+    const active = intents[intents.length - 1];
+
+    if (!active) {
+        console.log(chalk.red('No active intent found.'));
+        return;
+    }
+
+    const spinner = ora('Generating explanation...').start();
+    const explanation = await brain.generateExplanation(active);
+    spinner.succeed(chalk.green('Explanation Ready'));
+
+    console.log(boxen(
+      chalk.white(explanation),
+      { 
+        padding: 1, 
+        margin: 1, 
+        borderStyle: 'double', 
+        borderColor: 'cyan', 
+        title: `AI Architect: ${active.original}` 
+      }
+    ));
   });
 
 program
