@@ -78,6 +78,19 @@ I recommend isolating the domain logic and writing tests first.`;
     return this.ask(intent.original, contextStr);
   }
 
+  public async generateCommitMessage(intent: Intent): Promise<string> {
+    // Simulate AI generation for clear, conventional commits
+    const verbs = ['feat', 'fix', 'refactor', 'docs', 'style'];
+    const type = verbs.find(v => intent.original.toLowerCase().startsWith(v)) || 'feat';
+    
+    // Simulate rephrasing for clarity
+    const cleanMsg = intent.original
+        .replace(/^feat:|^fix:|^refactor:/, '')
+        .trim();
+        
+    return `${type}: ${cleanMsg}`;
+  }
+
   public async generateSmartTasks(intent: Intent, info: ProjectInfo): Promise<Task[]> {
     // For tasks, we still use a heuristic/simulation mix 
     // because parsing CLI text output into JSON tasks is unstable.
@@ -89,19 +102,30 @@ I recommend isolating the domain logic and writing tests first.`;
     // AI logic simulation
     const original = intent.original.toLowerCase();
     
-    if (info.framework === 'LARAVEL') {
+    if (info.frameworks.includes('LARAVEL')) {
         tasks.push({
             id: `AI-${id++}`,
             description: 'Draft Database Migration',
             status: 'TODO',
+            type: 'SHELL',
             command: `php artisan make:migration create_feature_table`
         });
-    } else if (info.framework === 'NEXT' || info.framework === 'REACT') {
+    } 
+    
+    if (info.frameworks.includes('NEXT') || info.frameworks.includes('REACT')) {
          tasks.push({
             id: `AI-${id++}`,
             description: 'Create Container Component',
             status: 'TODO',
-            file: `src/components/Feature/Container.tsx`
+            type: 'CREATE_FILE',
+            file: `src/components/Feature/Container.tsx`,
+            content: `import React from 'react';
+
+export const Container = ({ children }: { children: React.ReactNode }) => (
+  <div className="container mx-auto px-4 py-8">
+    {children}
+  </div>
+);`
         });
     }
     

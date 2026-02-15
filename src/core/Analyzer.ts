@@ -3,8 +3,9 @@ import path from 'path';
 import { glob } from 'glob';
 
 export interface ProjectInfo {
-  framework: 'LARAVEL' | 'REACT' | 'NEXT' | 'VUE' | 'NEST' | 'EXPRESS' | 'DJANGO' | 'UNKNOWN';
-  language: 'PHP' | 'JS' | 'TS' | 'PYTHON';
+  framework: string; // Primary or combined display string
+  frameworks: string[]; // List of all detected frameworks
+  language: 'PHP' | 'JS' | 'TS' | 'PYTHON' | 'MULTI';
   packageManager: 'NPM' | 'YARN' | 'PNPM' | 'COMPOSER' | 'PIP' | 'UNKNOWN';
   root: string;
   structure: {
@@ -26,7 +27,7 @@ export class Analyzer {
   public analyze(): ProjectInfo {
     const files = fs.readdirSync(this.root);
     
-    let framework: ProjectInfo['framework'] = 'UNKNOWN';
+    const frameworks: string[] = [];
     let language: ProjectInfo['language'] = 'JS';
     let packageManager: ProjectInfo['packageManager'] = 'UNKNOWN';
 
@@ -41,7 +42,7 @@ export class Analyzer {
     if (files.includes('composer.json')) {
       const composer = JSON.parse(fs.readFileSync(path.join(this.root, 'composer.json'), 'utf-8'));
       if (composer.require?.['laravel/framework']) {
-        framework = 'LARAVEL';
+        frameworks.push('LARAVEL');
         language = 'PHP';
       }
     }
@@ -50,25 +51,30 @@ export class Analyzer {
       const pkg = JSON.parse(fs.readFileSync(path.join(this.root, 'package.json'), 'utf-8'));
       const deps = { ...pkg.dependencies, ...pkg.devDependencies };
       
-      if (deps['next']) framework = 'NEXT';
-      else if (deps['react']) framework = 'REACT';
-      else if (deps['vue']) framework = 'VUE';
-      else if (deps['@nestjs/core']) framework = 'NEST';
-      else if (deps['express']) framework = 'EXPRESS';
+      if (deps['next']) frameworks.push('NEXT');
+      else if (deps['react']) frameworks.push('REACT');
+      else if (deps['vue']) frameworks.push('VUE');
+      else if (deps['@nestjs/core']) frameworks.push('NEST');
+      else if (deps['express']) frameworks.push('EXPRESS');
 
-      if (files.includes('tsconfig.json')) language = 'TS';
+      if (files.includes('tsconfig.json')) {
+          language = language === 'PHP' ? 'MULTI' : 'TS';
+      }
     }
 
     if (files.includes('manage.py')) {
-        framework = 'DJANGO';
-        language = 'PYTHON';
+        frameworks.push('DJANGO');
+        language = 'PYTHON'; // Or MULTI if others exist
     }
+
+    // Determine primary framework string
+    const framework = frameworks.length > 0 ? frameworks.join(' + ') : 'UNKNOWN';
 
     // Structure Detection
     const structure = {
       hasControllers: this.exists('app/Http/Controllers') || this.exists('src/controllers') || this.exists('controllers'),
       hasComponents: this.exists('src/components') || this.exists('components'),
-      hasModels: this.exists('app/Models') || this.exists('src/models') || this.exists('models'),
+      hasModels: this.exframeworks, ists('app/Models') || this.exists('src/models') || this.exists('models'),
       hasRoutes: this.exists('routes') || this.exists('src/routes'),
       routesPath: this.findPath(['routes/api.php', 'routes/web.php', 'src/routes.ts', 'src/app.ts'])
     };

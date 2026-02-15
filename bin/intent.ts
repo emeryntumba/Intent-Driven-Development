@@ -79,7 +79,7 @@ program
 
     // Git Planner Integration
     const branchName = GitPlanner.generateBranchName(intent);
-    const commitMsg = GitPlanner.generateCommitMessage(intent);
+    const commitMsg = await brain.generateCommitMessage(intent);
 
     console.log(boxen(
       `${chalk.bold(intent.original)}\n\n` +
@@ -94,7 +94,11 @@ program
     ));
 
     console.log(`\nRun ${chalk.cyan('intent tasks')} to see the implementation plan.`);
+    
+    // Auto-run tasks command
+    await executeTasks();
   });
+
 
 program
   .command('analyze')
@@ -136,7 +140,9 @@ program
 program
   .command('tasks')
   .description('Interactive task runner and executor')
-  .action(async () => {
+  .action(executeTasks);
+
+async function executeTasks() {
     const intents = memory.getIntents();
     const active = intents[intents.length - 1];
 
@@ -204,7 +210,7 @@ program
 
     memory.updateIntent(active.id, active);
     console.log(chalk.green('\nTask status updated.'));
-  });
+}
 
 // Brain is already imported at the top
 // import { Brain } from '../src/core/Brain.ts';

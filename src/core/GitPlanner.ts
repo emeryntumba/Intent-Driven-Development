@@ -13,6 +13,6 @@ export class GitPlanner {
   }
 
   public static generateCommitMessage(intent: Intent): string {
-    return `feat: implement logic for "${intent.original}"`;
+    return `feat: ${intent.original}`;
   }
 }

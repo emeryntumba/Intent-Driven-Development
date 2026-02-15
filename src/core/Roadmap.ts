@@ -15,8 +15,9 @@ export class Roadmap {
         type: 'MANUAL'
     });
 
-    // 2. Framework Specific Logic
-    if (info.framework === 'LARAVEL') {
+    // 2. Framework Specific Logic - Now Multi-Compatible
+    
+    if (info.frameworks.includes('LARAVEL')) {
         if (lower.includes('user') || lower.includes('auth') || lower.includes('register')) {
             tasks.push({
                 id: `T${idCounter++}`,
@@ -45,14 +46,16 @@ export class Roadmap {
         }
     } 
     
-    else if (info.framework === 'REACT' || info.framework === 'NEXT' || info.framework === 'VUE') {
+    if (info.frameworks.includes('REACT') || info.frameworks.includes('NEXT') || info.frameworks.includes('VUE')) {
+         const framework = info.frameworks.includes('NEXT') ? 'NEXT' : (info.frameworks.includes('VUE') ? 'VUE' : 'REACT');
+         
          if (lower.includes('page') || lower.includes('screen') || lower.includes('view') || lower.includes('index')) {
              const pageName = lower.includes('index') || lower.includes('home') ? 'Home' : 'NewPage';
-             const fileName = info.framework === 'NEXT' ? `src/app/${pageName.toLowerCase()}/page.tsx` : `src/pages/${pageName}.tsx`;
+             const fileName = framework === 'NEXT' ? `src/app/${pageName.toLowerCase()}/page.tsx` : `src/pages/${pageName}.tsx`;
              
              tasks.push({
                 id: `T${idCounter++}`,
-                description: `Create ${info.framework} Page (${pageName})`,
+                description: `Create ${framework} Page (${pageName})`,
                 status: 'TODO',
                 type: 'CREATE_FILE',
                 file: fileName,
@@ -65,12 +68,11 @@ export default function ${pageName}() {
       <p>This page was scaffolded automatically.</p>
     </div>
   );
-}
-`
+}`
              });
          }
          
-         const wantsComponent = lower.includes('component') || lower.includes('button') || lower.includes('form') || lower.includes('container'); 
+         const wantsComponent = lower.includes('component') || lower.includes('button') || lower.includes('form') || lower.includes('container') || lower.includes('navbar') || lower.includes('header') || lower.includes('sidebar'); 
          if (wantsComponent) {
              const compName = 'GeneratedComponent';
              tasks.push({
@@ -114,7 +116,7 @@ export const store = {
          }
     } 
     
-    else if (info.framework === 'NEST') {
+    if (info.frameworks.includes('NEST')) {
         tasks.push({
             id: `T${idCounter++}`,
             description: 'Generate Module',
@@ -122,6 +124,16 @@ export const store = {
             type: 'SHELL',
             command: 'nest g module resource'
         });
+    }
+
+    if (info.frameworks.includes('PYTHON') || info.frameworks.includes('DJANGO')) {
+         tasks.push({
+            id: `T${idCounter++}`,
+            description: 'Start App',
+            status: 'TODO',
+            type: 'SHELL',
+            command: 'python manage.py startapp feature'
+         });
     }
 
     // Default Fallback
