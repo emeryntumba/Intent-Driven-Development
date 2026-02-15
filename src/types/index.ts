@@ -15,8 +15,10 @@ export interface Task {
   id: string;
   description: string;
   status: 'TODO' | 'IN_PROGRESS' | 'DONE';
+  type?: 'SHELL' | 'CREATE_FILE' | 'MANUAL';
   file?: string;
   command?: string;
+  content?: string; // Content for file creation
 }
 
 export interface ProjectMemory {

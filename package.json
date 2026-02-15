@@ -5,9 +5,10 @@
   "main": "bin/intent.js",
   "type": "module",
   "bin": {
-    "intent": "./bin/intent.js"
+    "intent": "./bin/cli.js"
   },
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

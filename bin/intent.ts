@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --loader ts-node/esm --no-warnings
 import { Command } from 'commander';
 import chalk from 'chalk';
 import figlet from 'figlet';
@@ -12,6 +12,7 @@ import { Analyzer } from '../src/core/Analyzer.ts';
 import { Impact } from '../src/core/Impact.ts';
 import { Roadmap } from '../src/core/Roadmap.ts';
 import { GitPlanner } from '../src/core/GitPlanner.ts';
+import { Executor } from '../src/core/Executor.ts';
 import { Brain } from '../src/core/Brain.ts';
 
 const program = new Command();
@@ -20,6 +21,7 @@ const memory = Memory.getInstance();
 const analyzer = new Analyzer(process.cwd());
 const parser = new Parser(memory);
 const brain = new Brain();
+const executor = new Executor();
 
 
 console.log(
@@ -133,7 +135,7 @@ program
 
 program
   .command('tasks')
-  .description('Interactive task runner')
+  .description('Interactive task runner and executor')
   .action(async () => {
     const intents = memory.getIntents();
     const active = intents[intents.length - 1];
@@ -143,33 +145,61 @@ program
         return;
     }
 
+    // Filter tasks that are not yet done
+    const todoTasks = active.tasks.filter(t => t.status !== 'DONE');
+
+    if (todoTasks.length === 0) {
+        console.log(chalk.green('🎉 All tasks are already completed!'));
+        active.status = 'COMPLETED';
+        memory.updateIntent(active.id, active);
+        return;
+    }
+
+    // Ask user which tasks to execute/complete
     const answers = await inquirer.prompt([{
         type: 'checkbox',
-        name: 'completed',
-        message: 'Mark tasks as completed:',
-        choices: active.tasks.map(t => ({
-            name: `${t.description} ${t.file ? chalk.gray('(' + t.file + ')') : ''}`,
+        name: 'tasksToRun',
+        message: 'Select tasks to EXECUTE:',
+        choices: todoTasks.map(t => ({
+            name: `${t.description} ${t.type && t.type !== 'MANUAL' ? chalk.cyan('['+t.type+']') : ''} ${t.file ? chalk.gray('(' + t.file + ')') : ''}`,
             value: t.id,
-            checked: t.status === 'DONE'
+            checked: true
         }))
     }]);
 
-    const selectedIds = answers.completed;
+    const selectedIds = answers.tasksToRun;
+    
+    if (!selectedIds || selectedIds.length === 0) {
+        console.log('No tasks selected.');
+        return;
+    }
 
-    // Update status locally
-    let allDone = true;
-    active.tasks.forEach(t => {
-        if (selectedIds.includes(t.id)) {
-            t.status = 'DONE';
-        } else {
-            t.status = 'TODO'; // Toggle back if unchecked
-            allDone = false;
+    console.log(chalk.cyan('\n🚀 Executing selected tasks...\n'));
+
+    for (const task of active.tasks) {
+        if (selectedIds.includes(task.id)) {
+            // Execute automation if available
+            if (task.type === 'SHELL' || task.type === 'CREATE_FILE') {
+                const success = await executor.execute(task);
+                if (success) {
+                    task.status = 'DONE';
+                } else {
+                    console.log(chalk.red(`Task failed: ${task.description}`));
+                }
+            } else {
+                // Manual tasks are strictly "marked" as done
+                task.status = 'DONE';
+            }
         }
-    });
+    }
 
-    if (allDone) {
+    // Check overall completion
+    const remaining = active.tasks.filter(t => t.status !== 'DONE').length;
+    if (remaining === 0) {
         active.status = 'COMPLETED';
         console.log(chalk.green('\n🎉 All tasks completed! Intent fulfilled.'));
+    } else {
+        console.log(chalk.yellow(`\n${remaining} tasks remaining.`));
     }
 
     memory.updateIntent(active.id, active);
