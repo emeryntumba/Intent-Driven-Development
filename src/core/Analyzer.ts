@@ -105,8 +105,8 @@ export class Analyzer {
   }
 
   public async scanFiles(): Promise<string[]> {
-    // Naive scan for now
-    const ignore = ['node_modules/**', 'vendor/**', 'dist/**', '.git/**'];
-    return glob('**/*', { cwd: this.root, ignore });
+    // Optimized scan ignoring heavy folders
+    const ignore = ['**/node_modules/**', '**/vendor/**', '**/dist/**', '**/.git/**', '**/build/**'];
+    return glob('**/*', { cwd: this.root, ignore, dot: false });
   }
 }

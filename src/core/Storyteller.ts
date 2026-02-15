@@ -132,19 +132,22 @@ export class Storyteller {
             value: c.hash
           })),
           new inquirer.Separator(),
-          { name: 'Exit', value: 'exit' }
+          { name: 'Exit (Press x or select this)', value: 'exit' }
         ]
       }
     ]);
 
-    if (action === 'exit') return;
+    if (action === 'exit') {
+        console.log(chalk.gray('Returning to timeline...'));
+        return;
+    }
 
     await this.showCommitDetails(action);
     await this.interact(commits); // Loop back
   }
 
   private async showCommitDetails(hash: string) {
-    const spinner = ora('Analyzing commit...').start();
+    const spinner = ora('Analyzing commit with AI...').start();
     
     try {
       // Get commit diff
@@ -153,12 +156,11 @@ export class Storyteller {
       
       console.log(boxen(diff, { padding: 1, borderColor: 'gray' }));
 
-      // Copilot Explanation (Simulated or Real via Brain)
-      // For now, simple simulation
+      // Copilot Explanation
+      const explanation = await this.brain.ask(`Explain the impact of this git commit '${hash}' based on the changes. Assume the user is non-technical.`, diff.substring(0, 1000));
+
       console.log(chalk.cyan('🤖 Copilot Explanation:'));
-      console.log(chalk.italic(`Analysis of commit ${hash}:`));
-      console.log(`This change modified files to implement the intended behavior. 
-Key changes involve logic updates and structure adjustments.`);
+      console.log(chalk.italic(explanation));
       
     } catch (e) {
       spinner.fail('Could not retrieve commit details.');
