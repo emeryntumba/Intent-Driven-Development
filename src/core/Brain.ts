@@ -1,5 +1,6 @@
 import { execa } from 'execa';
 import type { Intent, Task } from '../types/index.ts';
+import type { ProjectInfo } from './Analyzer.ts';
 import chalk from 'chalk';
 
 /*
@@ -12,7 +13,7 @@ export class Brain {
    * Calls the local GitHub Copilot CLI to generate an explanation.
    * Uses `gh copilot explain` for context.
    */
-  public async ask(prompt: string): Promise<string> {
+  public async ask(prompt: string, context?: string): Promise<string> {
     try {
       // Trying to execute the official GitHub CLI extension
       // We use a timeout to avoid hanging if it waits for input
@@ -28,39 +29,56 @@ export class Brain {
       return stdout;
     } catch (err) {
       // console.error(chalk.yellow("⚠️ Copilot CLI not available, switching to simulation."));
-      return this.simulate(prompt);
+      return this.simulate(prompt, context);
     }
   }
 
   /**
    * Credible simulation for the hackathon demo (no API key needed)
+   * ADAPTS TO THE PROJECT CONTEXT (Semantic Simulation)
    */
-  private simulate(prompt: string): string {
-    if (prompt.includes('reset password')) {
-        return `To implement "${prompt}", we need to modify the Auth flow.
-1. Update the **User model** to support password reset tokens.
-2. Create a standardized **Notification** for email delivery.
-3. Secure the **API endpoint** with rate limiting to prevent abuse.`;
+  private simulate(prompt: string, contextString: string = 'Generic'): string {
+    const isLaravel = contextString.includes('LARAVEL');
+    const isReact = contextString.includes('REACT') || contextString.includes('NEXT');
+    const isPython = contextString.includes('PYTHON') || contextString.includes('DJANGO');
+
+    if (prompt.includes('reset password') || prompt.includes('auth')) {
+        if (isLaravel) {
+            return `To implement "${prompt}" in Laravel:
+1. Update **User** model (use StartPasswordReset trait).
+2. Generate Notification: \`php artisan make:notification ResetPassword\`.
+3. Create controller: \`php artisan make:controller Auth/ResetPasswordController\`.`;
+        }
+        if (isReact) {
+             return `To implement "${prompt}" in React/Next.js:
+1. Create a **ResetPassword** page/component with a form.
+2. Integrate with your Auth provider (Firebase/Auth0/NextAuth).
+3. Handle API calls to request reset link.`;
+        }
     }
     
-    if (prompt.includes('newsletter')) {
-        return `This feature requires a new subscription flow.
-1. **Database**: Migration for 'newsletter_subscribers' table.
-2. **Model**: Create Subscriber model with validation.
-3. **Controller**: Handle POST /subscribe requests.
-4. **Queue**: Dispatch emails asynchronously.`;
+    if (prompt.includes('newsletter') || prompt.includes('form')) {
+        if (isLaravel) {
+            return `This feature requires:
+1. **Migration**: 'newsletter_subscribers'.
+2. **Model**: Subscriber.
+3. **Controller**: NewsletterController@store.
+4. **Queue**: Configure Redis/Database driver for email dispatch during demo.`;
+        }
     }
 
-    return `I have analyzed the request "${prompt}".
-It appears to be a backend feature requiring new database migrations and API endpoints. 
-Recommend starting with the data layer.`;
+    // Fallback generic
+    return `Analysis for "${prompt}" in ${contextString} environment:
+It appears to be a ${prompt.includes('fix') ? 'Bugfix' : 'Feature'} request.
+I recommend isolating the domain logic and writing tests first.`;
   }
 
-  public async generateExplanation(intent: Intent): Promise<string> {
-    return this.ask(intent.original);
+  public async generateExplanation(intent: Intent, info: ProjectInfo): Promise<string> {
+    const contextStr = `${info.framework} (${info.language})`;
+    return this.ask(intent.original, contextStr);
   }
 
-  public async generateSmartTasks(intent: Intent): Promise<Task[]> {
+  public async generateSmartTasks(intent: Intent, info: ProjectInfo): Promise<Task[]> {
     // For tasks, we still use a heuristic/simulation mix 
     // because parsing CLI text output into JSON tasks is unstable.
     
@@ -71,27 +89,22 @@ Recommend starting with the data layer.`;
     // AI logic simulation
     const original = intent.original.toLowerCase();
     
-    tasks.push({
-      id: `AI-${id++}`,
-      description: 'Draft Database Schema',
-      status: 'TODO',
-      command: `php artisan make:migration create_${intent.original.split(' ').pop() || 'item'}_table`
-    });
-
-    tasks.push({
-      id: `AI-${id++}`,
-      description: 'Generate API Controller',
-      status: 'TODO',
-      file: `app/Http/Controllers/${intent.type === 'FEATURE' ? 'Feature' : 'Core'}Controller.php`
-    });
-
-    tasks.push({
-        id: `AI-${id++}`,
-        description: 'Update API Routes',
-        status: 'TODO',
-        file: 'routes/api.php'
-    });
-
+    if (info.framework === 'LARAVEL') {
+        tasks.push({
+            id: `AI-${id++}`,
+            description: 'Draft Database Migration',
+            status: 'TODO',
+            command: `php artisan make:migration create_feature_table`
+        });
+    } else if (info.framework === 'NEXT' || info.framework === 'REACT') {
+         tasks.push({
+            id: `AI-${id++}`,
+            description: 'Create Container Component',
+            status: 'TODO',
+            file: `src/components/Feature/Container.tsx`
+        });
+    }
+    
     return tasks;
   }
 }

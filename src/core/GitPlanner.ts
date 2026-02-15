@@ -1,4 +1,4 @@
-import { Intent } from '../types/index.ts';
+import type { Intent } from '../types/index.ts';
 
 export class GitPlanner {
   public static generateBranchName(intent: Intent): string {

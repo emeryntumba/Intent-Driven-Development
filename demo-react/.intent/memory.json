@@ -1,0 +1,43 @@
+{
+  "projectRoot": "E:\\Users\\PC HP\\Documents\\project\\Intent Driven Development\\demo-react",
+  "intents": [
+    {
+      "id": "zb4b7k",
+      "original": "create dashboard page with stats component",
+      "status": "COMPLETED",
+      "type": "FEATURE",
+      "impact": {
+        "files": [],
+        "modules": []
+      },
+      "createdAt": "2026-02-15T09:18:51.826Z",
+      "tasks": [
+        {
+          "id": "T1",
+          "description": "Analyze requirements & Design data structure",
+          "status": "DONE"
+        },
+        {
+          "id": "T2",
+          "description": "Create NEXT Page",
+          "status": "DONE",
+          "file": "app/page.tsx"
+        },
+        {
+          "id": "T3",
+          "description": "Create UI Component",
+          "status": "DONE",
+          "file": "src/components/"
+        },
+        {
+          "id": "AI-1",
+          "description": "Create Container Component",
+          "status": "DONE",
+          "file": "src/components/Feature/Container.tsx"
+        }
+      ]
+    }
+  ],
+  "scannedFiles": [],
+  "lastScan": null
+}

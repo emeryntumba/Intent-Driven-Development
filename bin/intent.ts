@@ -11,6 +11,7 @@ import { Parser } from '../src/core/Parser.ts';
 import { Analyzer } from '../src/core/Analyzer.ts';
 import { Impact } from '../src/core/Impact.ts';
 import { Roadmap } from '../src/core/Roadmap.ts';
+import { GitPlanner } from '../src/core/GitPlanner.ts';
 import { Brain } from '../src/core/Brain.ts';
 
 const program = new Command();
@@ -53,8 +54,8 @@ program
 
     const impactSpinner = ora('Calculating impact (AI Analysis)...').start();
     const impact = Impact.calculate(intent, projectFiles);
-    // Simulate AI thinking
-    await brain.generateExplanation(intent); 
+    // Simulate AI thinking with context
+    await brain.generateExplanation(intent, projectInfo); 
     
     intent.impact = impact;
 
@@ -62,24 +63,31 @@ program
 
     const planSpinner = ora('Generating roadmap with GitHub Copilot...').start();
     
-    // Combining Heuristics with AI logic
-    const baseTasks = Roadmap.generate(intent);
-    const aiTasks = await brain.generateSmartTasks(intent);
+    // Combining Heuristics with AI logic, using project context
+    const baseTasks = Roadmap.generate(intent, projectInfo);
+    const aiTasks = await brain.generateSmartTasks(intent, projectInfo);
     
     // Merge tasks
     intent.tasks = [...baseTasks, ...aiTasks].filter((v,i,a)=>a.findIndex(t=>(t.description === v.description))===i);
 
     intent.status = 'PLANNED';
     planSpinner.succeed(chalk.magenta(`Roadmap generated: ${intent.tasks.length} tasks ready`));
-
+    
     memory.addIntent(intent);
+
+    // Git Planner Integration
+    const branchName = GitPlanner.generateBranchName(intent);
+    const commitMsg = GitPlanner.generateCommitMessage(intent);
 
     console.log(boxen(
       `${chalk.bold(intent.original)}\n\n` +
       `${chalk.green('✔ Intent Registered')}\n` +
-      `${chalk.blue('✔ Project Context Loaded')}\n` +
+      `${chalk.blue('✔ Context Loaded')}\n` +
       `${chalk.yellow('✔ Impact Calculated')}\n` +
-      `${chalk.magenta('✔ Plan Ready')}`,
+      `${chalk.magenta('✔ Plan Ready')}\n\n` +
+      `${chalk.gray('Git Recommendation:')}\n` +
+      `Branch: ${chalk.cyan(branchName)}\n` +
+      `Commit: ${chalk.cyan(commitMsg)}`,
       { padding: 1, borderStyle: 'round', borderColor: 'green', title: 'Intent Summary' }
     ));
 
@@ -187,7 +195,14 @@ program
     }
 
     const spinner = ora('Generating explanation...').start();
-    const explanation = await brain.generateExplanation(active);
+    
+    // We need to re-analyze to get the context for explanation if we are running in a fresh command (not add)
+    // For simplicity in this demo, we assume the environment hasn't changed drastically or we scan quickly.
+    // In a real app, we would store ProjectInfo in memory/storage.
+    // Let's do a quick scan since we are in a different process usually.
+    const tempInfo = analyzer.analyze();
+    
+    const explanation = await brain.generateExplanation(active, tempInfo);
     spinner.succeed(chalk.green('Explanation Ready'));
 
     console.log(boxen(
