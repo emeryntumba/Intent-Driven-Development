@@ -16,37 +16,73 @@ Developers spend too much time on "How do I implement this?" (wiring files, crea
 - **📂 Git Integration**: Suggests atomic commits and branches (Planned).
 - **💾 Local Memory**: Remembers your project context and decisions.
 
-## 🛠 Installation
+## 🛠 Installation Guide (New Machine)
+
+### 1. Prerequisites
+- **Node.js** (v18 or higher)
+- **Git**
+- **GitHub CLI** (optional, recommended for AI features)
+
+### 2. Setup
+Clone the repository and install dependencies:
 
 ```bash
+git clone https://github.com/your-username/intent-driven-development.git
+cd intent-driven-development
 npm install
+```
+
+### 3. Build & Link
+Compile the TypeScript code and link the command globally:
+
+```bash
+# Compile TypeScript to JavaScript
 npm run build
+
+# Make 'intent' command available in your terminal
 npm link
 ```
+*Note: You may need `sudo npm link` on macOS/Linux.*
 
-## 🎮 Usage
+### 4. Verify
+Close and reopen your terminal, then run:
 
-### 1. Register an Intent
 ```bash
-intent add "users can subscribe to newsletter"
-```
-*The system analyzes your project and creates a plan.*
-
-### 2. View the Plan
-```bash
-intent plan
+intent --version
 ```
 
-### 3. Execute Tasks
-```bash
-intent tasks
-```
-*Interactive checklist to track progress.*
+## 🎮 Usage Workflow
 
-### 4. Check Status
-```bash
-intent status
-```
+1.  **Navigate to your project** (e.g., a Laravel or React app).
+    ```bash
+    cd my-laravel-app
+    ```
+
+2.  **Declare your Intent**
+    Tell the CLI what feature you want to build.
+    ```bash
+    intent add "users can reset password via email"
+    ```
+    *The specific tasks for Laravel/PHP will be generated.*
+
+3.  **Review the Plan**
+    See the roadmap and AI architectural advice.
+    ```bash
+    intent explain
+    intent plan
+    ```
+
+4.  **Track Progress**
+    Use the interactive checklist as you code.
+    ```bash
+    intent tasks
+    ```
+
+5.  **Check Status**
+    Get a summary dashboard.
+    ```bash
+    intent status
+    ```
 
 ## 🏗 Architecture
 
