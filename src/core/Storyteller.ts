@@ -98,11 +98,13 @@ export class Storyteller {
       const dateDisplay = lastDay !== commit.dayOffset ? chalk.bold(dayLabel) : '      ';
       lastDay = commit.dayOffset;
 
-      console.log(`${chalk.dim(dateDisplay)} ${icon} ${color(commit.message)} ${chalk.dim(`(${commit.author})`)}`);
+      const storyLine = this.brain.narrateCommit(commit.message, commit.author, commit.type);
+
+      console.log(`${chalk.dim(dateDisplay)} ${icon} ${color(storyLine)}`);
       
       // Simulated AI Insight for "Fixes"
       if (commit.type === 'fix') {
-         console.log(`       ${chalk.blue('🔵 AI Insight: Consider adding a regression test for this scenario.')}`);
+         console.log(`       ${chalk.blue('🔵 AI Insight: This fix might prevent user drop-off.')}`);
       }
     });
 

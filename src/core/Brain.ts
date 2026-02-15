@@ -110,6 +110,37 @@ I recommend isolating the domain logic and writing tests first.`;
     return `${type}: ${cleanMsg}`;
   }
 
+  public narrateCommit(message: string, author: string, type: string): string {
+    // Clean Git conventional prefix
+    let content = message.replace(/^(feat|fix|chore|docs|refactor|style|test)(\(.*\))?:/, '').trim();
+    
+    // Natural Language Generation (Simulated)
+    const vars = { author, content };
+    
+    // Basic template engine
+    const t = (str: string) => str.replace(/\${(.*?)}/g, (_, k) => vars[k as keyof typeof vars] || '');
+
+    if (type === 'feat') {
+       const templates = [
+           "${author} shipped a new feature: ${content}",
+           "${author} implemented ${content}",
+           "The project grew as ${author} added ${content}"
+       ];
+       return t(templates[Math.floor(Math.random() * templates.length)]);
+    }
+    if (type === 'fix') {
+       return t("${author} fixed a problem: ${content}");
+    }
+    if (type === 'chore') {
+       return t("${author} performed maintenance: ${content}");
+    }
+    if (type === 'docs') {
+       return t("${author} documented ${content}");
+    }
+    
+    return `${author} worked on ${content}`; 
+  }
+
   public async generateSmartTasks(intent: Intent, info: ProjectInfo): Promise<Task[]> {
     // For tasks, we still use a heuristic/simulation mix 
     // because parsing CLI text output into JSON tasks is unstable.
