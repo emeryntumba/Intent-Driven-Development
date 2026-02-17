@@ -27,7 +27,7 @@ Developers spend too much time on "How do I implement this?" (wiring files, crea
 
 1.  **Clone and Enter**:
     ```bash
-    git clone https://github.com/your-username/intent-driven-development.git
+    git clone https://github.com/emeryntumba/intent-driven-development.git
     cd intent-driven-development
     ```
 
